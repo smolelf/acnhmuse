@@ -72,6 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
         audioPlayer.play();
     }, { once: true });
 
+    // Handle visibility change to allow audio playback when screen is locked
+    document.addEventListener('visibilitychange', () => {
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+    });
+
     // Update the music source initially
     updateMusicSource();
 
