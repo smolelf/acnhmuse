@@ -2,17 +2,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPlayer = document.getElementById('audio-player');
     const currentTimeDisplay = document.getElementById('current-time');
 
-    let audioPlaying = true,
-    backgroundAudio, browser;
+    let audioContext, gainNode;
 
-    // Unhide the audio player
-    audioPlayer.style.display = 'block';
+    // Initialize Web Audio API
+    function initializeAudioContext() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaElementSource(audioPlayer);
+        gainNode = audioContext.createGain();
+        source.connect(gainNode).connect(audioContext.destination);
+    }
 
-    // Mute the audio player
-    audioPlayer.muted = true;
+    // Fade out the audio
+    function fadeOut(duration = 2) {
+        if (gainNode) {
+            const now = audioContext.currentTime;
+            gainNode.gain.cancelScheduledValues(now);
+            gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+            gainNode.gain.linearRampToValueAtTime(0, now + duration);
+        }
+    }
 
-    // Enable looping
-    audioPlayer.loop = true;
+    // Fade in the audio
+    function fadeIn(duration = 2) {
+        if (gainNode) {
+            const now = audioContext.currentTime;
+            gainNode.gain.cancelScheduledValues(now);
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(1, now + duration);
+        }
+    }
 
     function updateMusicSource() {
         const now = new Date();
@@ -20,11 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const period = hour >= 12 ? 'PM' : 'AM';
         hour = hour % 12 || 12; // Convert to 12-hour format
         const filename = `${hour}${period}.flac`;
-        audioPlayer.src = `music/${filename}`;
-        audioPlayer.type = 'audio/flac';
-        audioPlayer.load(); // Ensure the audio is loaded
-        audioPlayer.play(); // Start playing the audio
-        audioPlayer.muted = false; // Unmute the audio
+
+        // Fade out, change source, and fade in
+        fadeOut(2);
+        setTimeout(() => {
+            audioPlayer.src = `music/${filename}`;
+            audioPlayer.type = 'audio/flac';
+            audioPlayer.load(); // Ensure the audio is loaded
+            audioPlayer.play(); // Start playing the audio
+            fadeIn(2);
+        }, 2000); // Wait for fade-out to complete
 
         // Schedule the next update at the start of the next hour
         const nextHour = new Date();
@@ -41,20 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
     }
 
+    // Initialize audio context on user interaction
+    document.addEventListener('click', () => {
+        if (!audioContext) {
+            initializeAudioContext();
+        }
+        audioPlayer.play();
+    }, { once: true });
+
     // Update the music source initially
     updateMusicSource();
 
-    // Update the music source every hour
-    setInterval(updateMusicSource, 3600000); // 3600000 ms = 1 hour
-    
     // Update the time display every second
     setInterval(updateTimeDisplay, 1000); // 1000 ms = 1 second
 
     // Initial time display update
     updateTimeDisplay();
-
-    // Add a click event listener to enable autoplay in Chromium
-    document.addEventListener('click', () => {
-        audioPlayer.play();
-    }, { once: true });
 });
