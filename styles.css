@@ -9,6 +9,7 @@ body {
     align-items: center; /* Center align the content */
     height: 100vh;
     max-width: 1200px; /* Limit the maximum width for large screens */
+    justify-content: center;
 }
 
 header {
