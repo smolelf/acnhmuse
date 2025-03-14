@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPlayer = document.getElementById('audio-player');
     const currentTimeDisplay = document.getElementById('current-time');
 
-    let audioContext, gainNode;
+    let audioContext, gainNode, backgroundAudio, browser, audioPlaying = true;
 
     // Initialize Web Audio API
     function initializeAudioContext() {
@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle visibility change to allow audio playback when screen is locked
     document.addEventListener('visibilitychange', () => {
-        if (audioContext && audioContext.state === 'suspended') {
-            audioContext.resume();
+        if (audioContext && audioContext.state !== 'running') {
+            audioContext.resume().catch(err => console.error('Failed to resume AudioContext:', err));
         }
     });
 
