@@ -13,23 +13,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fade out the audio
-    function fadeOut(duration = 4) { // Changed duration to 4 seconds
-        if (gainNode) {
-            const now = audioContext.currentTime;
-            gainNode.gain.cancelScheduledValues(now);
-            gainNode.gain.setValueAtTime(gainNode.gain.value, now);
-            gainNode.gain.linearRampToValueAtTime(0, now + duration);
-        }
+    function fadeOut(duration = 4) {
+        const step = 0.05; // Volume decrement step
+        const interval = (duration * 1000) / (1 / step); // Interval in ms
+        const fadeInterval = setInterval(() => {
+            if (audioPlayer.volume > step) {
+                audioPlayer.volume -= step;
+            } else {
+                audioPlayer.volume = 0;
+                clearInterval(fadeInterval);
+            }
+        }, interval);
     }
 
     // Fade in the audio
-    function fadeIn(duration = 4) { // Changed duration to 4 seconds
-        if (gainNode) {
-            const now = audioContext.currentTime;
-            gainNode.gain.cancelScheduledValues(now);
-            gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(1, now + duration);
-        }
+    function fadeIn(duration = 4) {
+        const step = 0.05; // Volume increment step
+        const interval = (duration * 1000) / (1 / step); // Interval in ms
+        audioPlayer.volume = 0; // Start from 0 volume
+        const fadeInterval = setInterval(() => {
+            if (audioPlayer.volume < 1 - step) {
+                audioPlayer.volume += step;
+            } else {
+                audioPlayer.volume = 1;
+                clearInterval(fadeInterval);
+            }
+        }, interval);
     }
 
     function updateMusicSource() {
