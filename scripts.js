@@ -25,6 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         audioPlayer.load(); // Ensure the audio is loaded
         audioPlayer.play(); // Start playing the audio
         audioPlayer.muted = false; // Unmute the audio
+
+        // Schedule the next update at the start of the next hour
+        const nextHour = new Date();
+        nextHour.setHours(now.getHours() + 1, 0, 0, 0); // Set to the next hour
+        const timeUntilNextHour = nextHour - now;
+        setTimeout(updateMusicSource, timeUntilNextHour);
     }
 
     function updateTimeDisplay() {
@@ -40,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update the music source every hour
     setInterval(updateMusicSource, 3600000); // 3600000 ms = 1 hour
-
+    
     // Update the time display every second
     setInterval(updateTimeDisplay, 1000); // 1000 ms = 1 second
 
