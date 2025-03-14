@@ -32,3 +32,8 @@ main {
     margin-top: 1em;
     text-align: center; /* Center the real-world time display */
 }
+
+#fade-target {
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
+}
