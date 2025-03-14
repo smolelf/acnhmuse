@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fade out the audio
-    function fadeOut(duration = 2) {
+    function fadeOut(duration = 4) { // Changed duration to 4 seconds
         if (gainNode) {
             const now = audioContext.currentTime;
             gainNode.gain.cancelScheduledValues(now);
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fade in the audio
-    function fadeIn(duration = 2) {
+    function fadeIn(duration = 4) { // Changed duration to 4 seconds
         if (gainNode) {
             const now = audioContext.currentTime;
             gainNode.gain.cancelScheduledValues(now);
@@ -40,14 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const filename = `${hour}${period}.flac`;
 
         // Fade out, change source, and fade in
-        fadeOut(2);
+        fadeOut(4);
         setTimeout(() => {
             audioPlayer.src = `music/${filename}`;
             audioPlayer.type = 'audio/flac';
             audioPlayer.load(); // Ensure the audio is loaded
             audioPlayer.play(); // Start playing the audio
-            fadeIn(2);
-        }, 2000); // Wait for fade-out to complete
+            fadeIn(4);
+        }, 4000); // Wait for fade-out to complete
 
         // Schedule the next update at the start of the next hour
         const nextHour = new Date();
