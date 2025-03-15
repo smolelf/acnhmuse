@@ -1,39 +1,57 @@
 body {
-    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center header and main vertically */
+    align-items: center; /* Center content horizontally */
+    height: 100vh; /* Ensure the body takes full viewport height */
     margin: 0;
     padding: 0;
+    font-family: Arial, sans-serif;
     background-color: black;
     color: gray;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
 header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background-color: black;
-    color: white;
-    padding: 1em;
-    text-align: center;
+    color: white; /* Ensure text is readable on black background */
+    /* border-bottom: 1px solid black; */
 }
 
 main {
-    padding: 1em;
-    text-align: center; /* Center the text in the main section */
+    display: flex;
+    /* padding: 2rem; */
+}
+
+audio {
+    max-width: 100%;
 }
 
 #music-player {
-    margin-top: 2em;
+    /* margin-top: 2em; */
     text-align: center;
 }
 
 #current-time {
-    font-size: 2em;
-    margin-top: 1em;
-    text-align: center; /* Center the real-world time display */
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    color: #555;
 }
 
-#fade-target {
-    opacity: 1;
-    transition: opacity 2s ease-in-out;
+/* Responsive design */
+@media (max-width: 768px) {
+    body {
+        font-size: 90%;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    #current-time {
+        font-size: 1rem;
+    }
 }

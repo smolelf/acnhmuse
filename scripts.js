@@ -8,9 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Unhide the audio player
     audioPlayer.style.display = 'block';
 
-    // Mute the audio player
-    audioPlayer.muted = true;
-
     // Enable looping
     audioPlayer.loop = true;
 
@@ -20,11 +17,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const period = hour >= 12 ? 'PM' : 'AM';
         hour = hour % 12 || 12; // Convert to 12-hour format
         const filename = `${hour}${period}.flac`;
-        audioPlayer.src = `music/${filename}`;
-        audioPlayer.type = 'audio/flac';
-        audioPlayer.load(); // Ensure the audio is loaded
-        audioPlayer.play(); // Start playing the audio
-        audioPlayer.muted = false; // Unmute the audio
+
+        // Fade out the audio
+        audioPlayer.style.transition = "volume 4s";
+        audioPlayer.volume = 0;
+
+        setTimeout(() => {
+            // Update the audio source after fade-out
+            audioPlayer.src = `music/${filename}`;
+            audioPlayer.type = 'audio/flac';
+            audioPlayer.load(); // Ensure the audio is loaded
+
+            // Fade in the audio after updating the source
+            audioPlayer.play();
+            setTimeout(() => {
+                audioPlayer.volume = 1;
+            }, 100); // Small delay to ensure play starts before fade-in
+        }, 4000); // Wait for fade-out to complete
 
         // Schedule the next update at the start of the next hour
         const nextHour = new Date();

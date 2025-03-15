@@ -9,16 +9,15 @@
 <body>
     <header>
         <h1>Welcome to AC:NH Hourly Muse</h1>
-        <sup>Remember to always allow sound to be played on your browser</sup>
+        <sup>Remember to always allow sound to be played on your browser. If no sound played, press anywhere.</sup>
     </header>
     <main>
         <section id="music-player">
-            <audio id="audio-player" controls autoplay loop>
+            <audio id="audio-player" autoplay loop>
                 <!-- The source will be set dynamically by JavaScript -->
             </audio>
             <div id="current-time"></div>
         </section>
-        <div id="fade-target">This element will fade out and in every hour.</div>
     </main>
     <script src="scripts.js"></script>
 </body>
