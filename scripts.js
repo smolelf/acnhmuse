@@ -2,44 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioPlayer = document.getElementById('audio-player');
     const currentTimeDisplay = document.getElementById('current-time');
 
-    let audioContext, gainNode, backgroundAudio, browser, audioPlaying = true;
+    let audioPlaying = true,
+    backgroundAudio, browser;
 
-    // Initialize Web Audio API
-    function initializeAudioContext() {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioContext.createMediaElementSource(audioPlayer);
-        gainNode = audioContext.createGain();
-        source.connect(gainNode).connect(audioContext.destination);
-    }
+    // Unhide the audio player
+    audioPlayer.style.display = 'block';
 
-    // Fade out the audio
-    function fadeOut(duration = 4) {
-        const step = 0.05; // Volume decrement step
-        const interval = (duration * 1000) / (1 / step); // Interval in ms
-        const fadeInterval = setInterval(() => {
-            if (audioPlayer.volume > step) {
-                audioPlayer.volume -= step;
-            } else {
-                audioPlayer.volume = 0;
-                clearInterval(fadeInterval);
-            }
-        }, interval);
-    }
-
-    // Fade in the audio
-    function fadeIn(duration = 4) {
-        const step = 0.05; // Volume increment step
-        const interval = (duration * 1000) / (1 / step); // Interval in ms
-        audioPlayer.volume = 0; // Start from 0 volume
-        const fadeInterval = setInterval(() => {
-            if (audioPlayer.volume < 1 - step) {
-                audioPlayer.volume += step;
-            } else {
-                audioPlayer.volume = 1;
-                clearInterval(fadeInterval);
-            }
-        }, interval);
-    }
+    // Enable looping
+    audioPlayer.loop = true;
 
     function updateMusicSource() {
         const now = new Date();
@@ -48,14 +18,21 @@ document.addEventListener('DOMContentLoaded', () => {
         hour = hour % 12 || 12; // Convert to 12-hour format
         const filename = `${hour}${period}.flac`;
 
-        // Fade out, change source, and fade in
-        fadeOut(4);
+        // Fade out the audio
+        audioPlayer.style.transition = "volume 4s";
+        audioPlayer.volume = 0;
+
         setTimeout(() => {
+            // Update the audio source after fade-out
             audioPlayer.src = `music/${filename}`;
             audioPlayer.type = 'audio/flac';
             audioPlayer.load(); // Ensure the audio is loaded
-            audioPlayer.play(); // Start playing the audio
-            fadeIn(4);
+
+            // Fade in the audio after updating the source
+            audioPlayer.play();
+            setTimeout(() => {
+                audioPlayer.volume = 1;
+            }, 100); // Small delay to ensure play starts before fade-in
         }, 4000); // Wait for fade-out to complete
 
         // Schedule the next update at the start of the next hour
@@ -73,27 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
     }
 
-    // Initialize audio context on user interaction
-    document.addEventListener('click', () => {
-        if (!audioContext) {
-            initializeAudioContext();
-        }
-        audioPlayer.play();
-    }, { once: true });
-
-    // Handle visibility change to allow audio playback when screen is locked
-    document.addEventListener('visibilitychange', () => {
-        if (audioContext && audioContext.state !== 'running') {
-            audioContext.resume().catch(err => console.error('Failed to resume AudioContext:', err));
-        }
-    });
-
     // Update the music source initially
     updateMusicSource();
 
+    // Update the music source every hour
+    setInterval(updateMusicSource, 3600000); // 3600000 ms = 1 hour
+    
     // Update the time display every second
     setInterval(updateTimeDisplay, 1000); // 1000 ms = 1 second
 
     // Initial time display update
     updateTimeDisplay();
+
+    // Add a click event listener to enable autoplay in Chromium
+    document.addEventListener('click', () => {
+        audioPlayer.play();
+    }, { once: true });
 });
